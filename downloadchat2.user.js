@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Download character.ai chat
-// @namespace    c.ai
+// @namespace    https://github.com/wiger3/downloadchat/
 // @version      2.3
 // @author       wiger3
 // @description  Downloads the current character.ai chat as a text file. Right click on page to use. Only works for old.character.ai/chat2
