@@ -3,7 +3,7 @@
 // @namespace    https://github.com/wiger3/downloadchat/
 // @version      2.4
 // @author       wiger3
-// @description  Downloads the current character.ai chat as a text file. Right click on page to use. Only works for old.character.ai/chat2
+// @description  Downloads the current character.ai chat as a text file. Right click on page to use.
 // @match        https://old.character.ai/chat2*
 // @match        https://character.ai/chat/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=character.ai
