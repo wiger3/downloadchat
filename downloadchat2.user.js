@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Download character.ai chat
 // @namespace    https://github.com/wiger3/downloadchat/
-// @version      2.3
+// @version      2.4
 // @author       wiger3
 // @description  Downloads the current character.ai chat as a text file. Right click on page to use. Only works for old.character.ai/chat2
 // @match        https://old.character.ai/chat2*
+// @match        https://character.ai/chat/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=character.ai
 // @run-at context-menu
 // ==/UserScript==
@@ -14,10 +15,23 @@
     2.1 - Replaced the console logging with actual downloading. The chat will now download as "<character name> <date>.txt"
     2.2 - Fixed an issue with downloading longer chats
     2.3 - Added a dialog to select how to format the downloaded file. First public release
+    2.4 - Added support for new character.ai website
 */
 
 (async ()=>{
-    var token = JSON.parse(localStorage['char_token']).value;
+    var cai_version = -1;
+    if(location.hostname == "old.character.ai")
+        cai_version = 1;
+    else if(location.pathname.startsWith("/chat/"))
+        cai_version = 2;
+    else
+        return alert("Unsupported character.ai version");
+
+    var token;
+    if(cai_version == 1)
+        token = JSON.parse(localStorage['char_token']).value;
+    else if(cai_version == 2)
+        token = JSON.parse(document.getElementById("__NEXT_DATA__").innerHTML).props.pageProps.token;
 
     var _cache; // avoid double request
     async function _fetchchats(charid) {
@@ -38,7 +52,7 @@
         for(let x of json) chats.push(x.chat_id);
         return chats;
     }
-    async function getMessages(charid, chat, format) {
+    async function getMessages(chat, format) {
         let url = 'https://neo.character.ai/turns/' + chat + '/';
         let next_token = null;
 
@@ -72,14 +86,17 @@
     async function saveChat(e) {
         let format = e.formData.get('format');
         dialog.close();
-        console.log(format);
-        let char = params('char');
+        let char;
+        if(cai_version == 1)
+            char = params('char');
+        else if(cai_version == 2)
+            char = location.pathname.split("/")[2];
         let history = params('hist');
         if(history === null) {
             let chats = await getChats(char);
             history = chats[0];
         }
-        let msgs = await getMessages(char, history, format);
+        let msgs = await getMessages(history, format);
         let str = "";
         for(let msg of msgs) {
             str += `${msg.author}: ${msg.message}\n`;
