@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Download character.ai chat
 // @namespace    https://github.com/wiger3/downloadchat/
-// @version      2.4
+// @version      2.5
 // @author       wiger3
 // @description  Downloads the current character.ai chat as a text file. Right click on page to use.
 // @match        https://old.character.ai/chat2*
 // @match        https://character.ai/chat/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=character.ai
-// @run-at context-menu
+// @run-at       context-menu
 // ==/UserScript==
 
 /* Changelog
@@ -16,6 +16,7 @@
     2.2 - Fixed an issue with downloading longer chats
     2.3 - Added a dialog to select how to format the downloaded file. First public release
     2.4 - Added support for new character.ai website
+    2.5 - Fixed an issue with downloading empty messages. Now will download as empty instead of "undefined".
 */
 
 (async ()=>{
@@ -73,6 +74,8 @@
                 else if(format == "names")
                     o.author = turn.author.name;
                 o.message = turn.candidates.find(x => x.candidate_id === turn.primary_candidate_id).raw_content;
+                if (o.message == undefined)
+                    o.message = "";
                 turns.push(o);
             }
             next_token = json['meta']['next_token'];
